@@ -40,7 +40,7 @@ npx playwright test
 รัน test เฉพาะไฟล์:
 
 ```bash
-npx playwright test tests/testcase_15.spec.js
+npx playwright test tests/testcase_15.spec.js --headed --project=chromium --workers=1
 ```
 
 รันเฉพาะ test ที่มีชื่อหรือรหัสตรงกับข้อความที่กำหนด:
