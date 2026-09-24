@@ -8,7 +8,7 @@ test.describe('UC-15: ดูแดชบอร์ดผู้ดูแลระ�
     await page.goto('https://t-check-two.vercel.app/');
     await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
     await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('admin');
-    await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('admin123');
+    await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('admin1234');
     await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 

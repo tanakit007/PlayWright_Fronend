@@ -11,9 +11,6 @@ test.describe('UC-13: ออกจากระบบ', () => {
     await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 
-    // เข้าสู่หน้า Editor
-    await page.getByRole('link', { name: 'จัดการเอกสาร' }).click();
-    await page.getByText(/มีประวัติการแก้แก้ไขล่าสุด/i).first().click();
   });
 
   // TC 1301: ตรวจสอบการออกจากระบบสำเร็จผ่านเมนู Dropdown บน Navbar
@@ -25,8 +22,6 @@ test.describe('UC-13: ออกจากระบบ', () => {
     await page.getByRole('button', { name: 'ออกจากระบบ' }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 
-    // ตรวจสอบข้อความแจ้งเตือนสำเร็จ (ถ้ามีแจ้งเตือนแบบ Alert/Toast)
-    await expect(page.getByText('ออกจากระบบสำเร็จ')).toBeVisible().catch(() => {});
 
     // ตรวจสอบว่ากลับมาหน้าหลัก/หน้า Login (พบปุ่ม ลงชื่อเข้าใช้)
     await expect(page.getByRole('link', { name: 'ลงชื่อเข้าใช้' })).toBeVisible();

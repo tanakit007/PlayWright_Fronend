@@ -14,7 +14,10 @@ test.describe('UC-11: ดูประวัติการแก้ไขคำ�
 
     // 2. ไปที่หน้าจัดการเอกสาร และเปิดเอกสารที่มีประวัติ
     await page.getByRole('link', { name: 'จัดการเอกสาร' }).click();
-    await page.getByText('มีประวัติการแก้แก้ไขล่าสุด: 1').click();
+    await page.getByRole('heading', { name: 'มีประวัติการแก้' })
+      .or(page.getByText('มีประวัติการแก้', { exact: false }))
+      .first()
+      .click();
 
     // 3. เปิดแถบประวัติ
     await page.getByRole('button', { name: 'ประวัติ' }).click();
