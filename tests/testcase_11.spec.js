@@ -9,7 +9,7 @@ test.describe('UC-11: ดูประวัติการแก้ไขคำ�
     await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
     await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('new2026');
     await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('Pass1234!');
-    await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+    await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 
     // 2. ไปที่หน้าจัดการเอกสาร และเปิดเอกสารที่มีประวัติ
@@ -36,7 +36,7 @@ test.describe('UC-11: ดูประวัติการแก้ไขคำ�
     await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
     await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('new2026');
     await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('Pass1234!');
-    await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+    await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 
     // 2. ไปที่หน้าจัดการเอกสาร แล้วเลือกเปิดเอกสารที่ยังไม่มีการแก้ไข

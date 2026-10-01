@@ -8,7 +8,7 @@
         await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
         await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('new2026');
         await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('Pass1234!');
-        await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+        await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
         await page.getByRole('button', { name: 'ตกลง' }).click();
 
         // เปิดหน้าแดชบอร์ด
@@ -36,7 +36,7 @@
         await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
         await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('new2026');
         await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('Pass1234!');
-        await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+        await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
         await page.getByRole('button', { name: 'ตกลง' }).click();
 
         // ไปที่หน้าแดชบอร์ด
@@ -60,7 +60,7 @@
         await expect(page).toHaveURL(/.*(sign-?in|login)/i);
 
         // ตรวจสอบปุ่มเข้าสู่ระบบ
-        await expect(page.getByRole('button', { name: 'เข้าสู่ระบบ' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'เข้าสู่ระบบ' })).toBeVisible();
     });
 
     });

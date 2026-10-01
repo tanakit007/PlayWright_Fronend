@@ -9,7 +9,7 @@ test.describe('UC-15: ดูแดชบอร์ดผู้ดูแลระ�
     await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
     await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('admin');
     await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('admin1234');
-    await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+    await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 
     // 2. เปิดหน้าแดชบอร์ดผู้ดูแล (Admin Panel)
@@ -39,7 +39,7 @@ test.describe('UC-15: ดูแดชบอร์ดผู้ดูแลระ�
     await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
     await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('new2026');
     await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('Pass1234!');
-    await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+    await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
     await page.getByRole('button', { name: 'ตกลง' }).click();
 
     // 2. พยายามเข้าถึง URL แดชบอร์ดแอดมินโดยตรง
@@ -57,7 +57,7 @@ test.describe('UC-15: ดูแดชบอร์ดผู้ดูแลระ�
 //     await page.getByRole('link', { name: 'ลงชื่อเข้าใช้' }).click();
 //     await page.getByRole('textbox', { name: 'ชื่อผู้ใช้ หรือ อีเมล' }).fill('admin');
 //     await page.getByRole('textbox', { name: 'รหัสผ่าน' }).fill('admin123');
-//     await page.getByRole('button', { name: 'เข้าสู่ระบบ' }).click();
+//     await page.getByRole('button', { name: 'เข้าสู่ระบบ', exact: true }).click();
 //     await page.getByRole('button', { name: 'ตกลง' }).click();
 
 //     // 2. ดัก Mock Network ให้ API ดึงข้อมูลสถิติตอบกลับ Error Status 500
