@@ -1,46 +1,203 @@
 import { test, expect } from "@playwright/test";
 
-// แนะนำให้ตั้งชื่อเทสต์เคสให้สื่อถึงสิ่งที่จะทดสอบชัดเจน
-test("Verify tone adjustment to Casual in T-Check", async ({ page }) => {
-  // 1. เข้าสู่ระบบ (Login)
-  await page.goto("https://t-check-two.vercel.app/");
-  await page.getByRole("link", { name: "ลงชื่อเข้าใช้" }).click();
-  await page
-    .getByRole("textbox", { name: "ชื่อผู้ใช้ หรือ อีเมล" })
-    .fill("realuser");
-  await page.getByRole("textbox", { name: "รหัสผ่าน" }).fill("123456789");
-  await page.getByRole("button", { name: "เข้าสู่ระบบ" }).click();
-  await page.getByRole("button", { name: "ตกลง" }).click();
+const baseURL = "https://t-check-two.vercel.app";
+const username = "realuser";
+const password = "123456789";
 
-  // 2. ไปที่จัดการเอกสาร (Document Management)
-  await page.getByRole("link", { name: "จัดการเอกสาร" }).click();
-  await page
-    .getByRole("heading", { name: "ปรับโทน" })
-    .or(page.getByText("ปรับโทน", { exact: false }))
-    .first()
-    .click();
+test.describe("UC-07: ปรับโทนภาษา", () => {
+  test.describe.configure({ mode: "serial" });
+  let originalText;
 
-  // 3. กรอกข้อมูลลงใน Editor
-  // [!] แก้ไข Syntax Error: ใช้ Backtick (`) ครอบข้อความยาวๆ ที่มีเครื่องหมาย " อยู่ด้านใน
-  const longText = `งานวิจัยฉบับนี้มีวัตถุประสงค์เพื่อศึกษาปัจจัยทางจิตวิทยาที่ส่งผลต่อปรากฏการณ์ "พฤติกรรมการผัดวันประกันพรุ่งในการนอนหลับเพื่อล้างแค้น" (Revenge Bedtime Procrastination - RBP) ซึ่งเป็นภาวะที่บุคคลจงใจชะลอเวลาการนอนหลับของตนเองออกไปเพื่อประกอบกิจกรรมนันทนาการ (เช่น การใช้สื่อสังคมออนไลน์) แม้จะตระหนักถึงผลกระทบเชิงลบต่อสุขภาพ การศึกษานี้ใช้วิธีการวิจัยแบบผสมผสาน (Mixed Methods) โดยเก็บรวบรวมข้อมูลผ่านแบบสอบถามและการสัมภาษณ์เชิงลึกจากกลุ่มตัวอย่างวัยทำงานและวัยรุ่นผลการศึกษาพบว่า พฤติกรรม RBP ไม่ได้มีความสัมพันธ์กับภาวะความผิดปกติของการนอนหลับ (Sleep Disorders) หรือโรคนอนไม่หลับ (Insomnia) แต่เป็นกลไกการชดเชยทางจิตวิทยา (Psychological Compensation) ที่มีนัยสำคัญทางสถิติกับระดับความเครียดและการขาดอิสระในการจัดการเวลาในช่วงกลางวัน กลุ่มตัวอย่างที่มีภาระงานสูงและขาดความสมดุลระหว่างชีวิตและการทำงาน (Work-Life Balance) จะมีแนวโน้มแสดงพฤติกรรม RBP สูงขึ้น เพื่อทวงคืนสิทธิในการควบคุมเวลาส่วนตัวในช่วงเวลากลางคืนข้อค้นพบจากการวิจัยนี้สรุปได้ว่า การสูญเสียอำนาจในการควบคุมตนเองในเวลากลางวันเป็นตัวแปรสำคัญที่กระตุ้นให้เกิดการเบียดบังเวลานอน ผู้วิจัยจึงมีข้อเสนอแนะให้องค์กรและบุคคลให้ความสำคัญกับการบริหารจัดการความเครียด และการจัดสรรเวลาพักผ่อนระยะสั้นระหว่างวันอย่างเหมาะสม เพื่อลดความเสี่ยงของการเกิดพฤติกรรมดังกล่าวและยกระดับสุขภาวะด้านการนอนหลับในระยะยาว`;
+  async function openToneEditor(page) {
+    await page.goto(`${baseURL}/sign-in`);
+    await page
+      .getByRole("textbox", { name: "ชื่อผู้ใช้ หรือ อีเมล" })
+      .fill(username);
+    await page.getByRole("textbox", { name: "รหัสผ่าน" }).fill(password);
+    await page.getByRole("button", { name: "เข้าสู่ระบบ", exact: true }).click();
+    await expect(page.getByText("เข้าสู่ระบบสำเร็จ")).toBeVisible();
+    await page.getByRole("button", { name: "ตกลง", exact: true }).click();
 
-  // ลดความซ้ำซ้อนด้วยการชี้ไปที่ textbox และพิมพ์ข้อความได้เลย
-  const editor = page.locator("#page-0").getByRole("textbox");
-  await editor.fill(longText);
+    await page.getByRole("link", { name: "จัดการเอกสาร" }).click();
+    await page.getByRole("heading", { name: "ปรับโทน" }).click();
+    const editor = page.locator("#page-0").getByRole("textbox");
+    await editor.waitFor();
+    await expect(editor).not.toBeEmpty();
+    originalText = await editor.innerText();
+    return editor;
+  }
 
-  // 4. เลือกปรับโทนภาษา
-  // Note สำหรับธนกฤต: โลเคเตอร์ .nth(5) เปราะบางมาก หาก UI เปลี่ยนเทสต์นี้จะพัง แนะนำให้เพิ่ม data-testid ที่ปุ่มนี้
-  await page.getByRole("button").filter({ hasText: /^$/ }).nth(5).click();
+  async function openToneOptions(page) {
+    // The tone-options toolbar button currently has no accessible name.
+    await page.locator('button:has(svg line[x1="3"][y1="5"])').first().click();
+  }
 
-  await page.locator("label").filter({ hasText: "กันเอง (Casual" }).click();
-  // ลบคำสั่ง await page.getByRole("radio").check() ออก เพราะการคลิกที่ label ด้านบนถือว่าเป็นการเลือก Radio แล้ว
+  async function mockToneResponse(page, issues) {
+    let requestBody;
+    await page.route("**/api/grammar/check", async (route) => {
+      requestBody = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ issues }),
+      });
+    });
+    return { getRequestBody: () => requestBody };
+  }
 
-  await page.getByRole("button", { name: "ปรับโทน" }).click();
+  test.afterEach(async ({ page }) => {
+    if (!page.url().includes("/docs/editor/")) {
+      return;
+    }
 
-  // 5. ตรวจสอบผลลัพธ์ (Assertion)
-  await expect(
-    page.getByText("เนื้อหาเหมาะสมกับโทนภาษาที่เลือกแล้ว"),
-  ).toBeVisible();
+    const editor = page.locator("#page-0").getByRole("textbox");
+    await editor.fill(originalText);
+    const saveButton = page.getByRole("button", { name: "บันทึก", exact: true });
+    if (await saveButton.isVisible().catch(() => false)) {
+      await saveButton.click();
+      await page.waitForTimeout(500);
+    }
+  });
 
-  // ลบ page.locator("div").nth(3).click(); ออกเนื่องจากไม่มีความจำเป็นในการทดสอบและเป็นส่วนที่เปราะบาง
+  test("TC 0701 - ปรับข้อความเป็นโทนทางการสำหรับสมาชิกพิเศษ", async ({
+    page,
+  }) => {
+    test.setTimeout(90_000);
+    const editor = await openToneEditor(page);
+    await editor.fill("หวัดดีครับวันนี้มาคุยเรื่องงานกัน");
+
+    await openToneOptions(page);
+    await page.locator('input[name="tone"][value="strict"]').check({
+      force: true,
+    });
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+
+    await expect(
+      page.getByRole("button", { name: /คำแนะนำ\s*[1-9]\d*/ }),
+    ).toBeVisible({ timeout: 60_000 });
+  });
+
+  test("TC 0702 - แจ้งเตือนเมื่อไม่มีข้อความใน Editor", async ({ page }) => {
+    const editor = await openToneEditor(page);
+    await editor.fill("");
+
+    await openToneOptions(page);
+    await page.locator('input[name="tone"][value="strict"]').check({
+      force: true,
+    });
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+
+    await expect(
+      page.getByText("กรุณาพิมพ์ข้อความก่อนปรับโทนภาษา"),
+    ).toBeVisible();
+  });
+
+  test("TC 0703 - แจ้งว่าเนื้อหาเหมาะสมกับโทนทางการอยู่แล้ว", async ({
+    page,
+  }) => {
+    const editor = await openToneEditor(page);
+    await editor.fill("เรียน ท่านประธานและคณะกรรมการ");
+
+    await openToneOptions(page);
+    await page.locator('input[name="tone"][value="strict"]').check({
+      force: true,
+    });
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+
+    await expect(
+      page.getByText("เนื้อหาเหมาะสมกับโทนภาษาที่เลือกแล้ว"),
+    ).toBeVisible();
+  });
+
+  test("TC 0704 - ปรับข้อความเป็นโทนกันเอง (Casual)", async ({ page }) => {
+    const request = await mockToneResponse(page, [
+      { span: "หวัดดี", replacement: "สวัสดี" },
+    ]);
+    const editor = await openToneEditor(page);
+    const input = "หวัดดี วันนี้มาคุยเรื่องงานกัน";
+    await editor.fill(input);
+
+    await openToneOptions(page);
+    await page.locator('input[name="tone"][value="casual"]').check({
+      force: true,
+    });
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+
+    await expect(
+      page.getByRole("button", { name: /คำแนะนำ\s*1/ }),
+    ).toBeVisible();
+    expect(request.getRequestBody()).toMatchObject({
+      text: input,
+      mode: "casual",
+    });
+  });
+
+  test("TC 0705 - ใช้โทนที่เลือกครั้งสุดท้าย", async ({ page }) => {
+    const request = await mockToneResponse(page, [
+      { span: "ดีจ้า", replacement: "สวัสดี" },
+    ]);
+    const editor = await openToneEditor(page);
+    const input = "ดีจ้า ขอคุยเรื่องนี้กันนะ";
+    await editor.fill(input);
+
+    await openToneOptions(page);
+    const strictTone = page.locator('input[name="tone"][value="strict"]');
+    const casualTone = page.locator('input[name="tone"][value="casual"]');
+    await strictTone.check({ force: true });
+    await casualTone.check({ force: true });
+    await expect(casualTone).toBeChecked();
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+
+    await expect(
+      page.getByRole("button", { name: /คำแนะนำ\s*1/ }),
+    ).toBeVisible();
+    expect(request.getRequestBody()).toMatchObject({
+      text: input,
+      mode: "casual",
+    });
+  });
+
+  test("TC 0706 - ยอมรับคำแนะนำแล้วแก้ไขข้อความใน Editor", async ({
+    page,
+  }) => {
+    await mockToneResponse(page, [
+      { span: "หวัดดีครับ", replacement: "สวัสดีครับ" },
+    ]);
+    const editor = await openToneEditor(page);
+    await editor.fill("หวัดดีครับ วันนี้มาคุยเรื่องงานกัน");
+
+    await openToneOptions(page);
+    await page.locator('input[name="tone"][value="strict"]').check({
+      force: true,
+    });
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+    await page.getByRole("button", { name: "แก้ไข", exact: true }).first().click();
+
+    await expect(editor).toContainText("สวัสดีครับ");
+    await expect(editor).not.toContainText("หวัดดีครับ");
+  });
+
+  test("TC 0707 - แสดงคำแนะนำสำหรับข้อความหลายประโยค", async ({ page }) => {
+    const input = "เฮ้ย วันนี้พักก่อน\nพรุ่งนี้คุยต่อ โอเคปะ";
+    const request = await mockToneResponse(page, [
+      { span: "เฮ้ย", replacement: "สวัสดี" },
+      { span: "โอเคปะ", replacement: "สะดวกหรือไม่" },
+    ]);
+    const editor = await openToneEditor(page);
+    await editor.fill(input);
+
+    await openToneOptions(page);
+    await page.locator('input[name="tone"][value="casual"]').check({
+      force: true,
+    });
+    await page.getByRole("button", { name: "ปรับโทน", exact: true }).click();
+
+    await expect(
+      page.getByRole("button", { name: /คำแนะนำ\s*2/ }),
+    ).toBeVisible();
+    await expect(editor).toContainText("เฮ้ย");
+    await expect(editor).toContainText("โอเคปะ");
+    expect(request.getRequestBody().text).toContain("พรุ่งนี้คุยต่อ");
+    expect(request.getRequestBody().mode).toBe("casual");
+  });
 });

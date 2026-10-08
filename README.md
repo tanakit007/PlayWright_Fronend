@@ -92,7 +92,10 @@ npx playwright show-report
 │   ├── testcase_12.spec.js   # ทดสอบการแก้ไขโปรไฟล์
 │   ├── testcase_13.spec.js   # ทดสอบการออกจากระบบ
 │   ├── testcase_14.spec.js   # ทดสอบแดชบอร์ดสมาชิก
-│   └── testcase_15.spec.js   # ทดสอบแดชบอร์ดผู้ดูแลระบบ
+│   ├── testcase_15.spec.js   # ทดสอบแดชบอร์ดผู้ดูแลระบบ
+│   ├── testcase_16.spec.js   # ทดสอบการตั้งค่าและจัดการบัญชี
+│   ├── testcase_19.spec.js   # ทดสอบเข้าสู่ระบบด้วย Google
+│   └── testcase_20.spec.js   # ทดสอบการเปลี่ยนภาษาแสดงผล
 ├── playwright-report/        # ผลลัพธ์ HTML ที่สร้างหลังรัน
 └── test-results/             # artifacts จากการทดสอบ
 ```
@@ -122,6 +125,26 @@ npx playwright show-report
 ```powershell
 npm.cmd exec -- playwright test
 ```
+
+### Test case 16 และ 19
+
+กรณีทดสอบการตั้งค่าบัญชีต้องใช้บัญชีทดสอบที่มีสิทธิ์ล็อกอิน ตั้งค่าผ่าน environment variables ก่อนรัน:
+
+```powershell
+$env:TEST_USERNAME = "test-user"
+$env:TEST_PASSWORD = "test-password"
+npm.cmd exec -- playwright test tests/testcase_16.spec.js
+```
+
+TC 1901 ตรวจสอบว่าปุ่ม Google เปิดขั้นตอน OAuth ได้ และรันได้โดยไม่ต้องตั้งค่าเพิ่มเติม ส่วน TC 1902–1903 ต้องใช้บัญชี Google ทดสอบที่เตรียมไว้ให้ตรงกับบัญชี Local:
+
+```powershell
+$env:RUN_GOOGLE_OAUTH_TESTS = "true"
+$env:MERGE_TEST_EMAIL = "merge-test@example.com"
+npm.cmd exec -- playwright test tests/testcase_19.spec.js
+```
+
+อย่าใส่รหัสผ่านหรือข้อมูลลับของบัญชีจริงไว้ใน source code หรือ commit ลง repository
 
 ## การเพิ่ม Test ใหม่
 
